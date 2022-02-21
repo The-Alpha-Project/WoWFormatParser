@@ -24,14 +24,16 @@ namespace WoWFormatParser.Structures.ADT
         public MDDF[] MapModelDefinitions;
         public MHDR MapHeader;
         public MCIN[,] ChunkInfo;
-        public IReadOnlyList<MCNK> MapChunks;
+        public MCNK[,] MapChunks;
 
         public ADT(BinaryReader br, uint build, long offset = 0)
         {
             IsAlphaFormat = build < 3592;
             Offset = offset;
 
-            List<MCNK> _MapChunks = new List<MCNK>();
+            MCNK[,] _MapChunks = null;
+            var chunk_x = 0;
+            var chunk_y = 0;
 
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
@@ -72,7 +74,16 @@ namespace WoWFormatParser.Structures.ADT
                         MapModelDefinitions = br.ReadArray(Size / 0x24, () => new MDDF(br));
                         break;
                     case "MCNK":
-                        _MapChunks.Add(new MCNK(br, build, Size));
+                        if (_MapChunks == null)
+                            _MapChunks = new MCNK[16, 16];
+
+                        // Place chunks on their correct position.
+                        _MapChunks[chunk_x, chunk_y] = new MCNK(br, build, Size);
+                        if (chunk_y++ == 15)
+                        {
+                            chunk_x++;
+                            chunk_y = 0;
+                        }
                         break;
                     default:
                         throw new NotImplementedException("Unknown token " + Token);
@@ -81,7 +92,7 @@ namespace WoWFormatParser.Structures.ADT
 
             ValidateIsRead(br, br.BaseStream.Length);
 
-            if (_MapChunks.Count > 0)
+            if (_MapChunks != null)
                 MapChunks = _MapChunks;
         }
 

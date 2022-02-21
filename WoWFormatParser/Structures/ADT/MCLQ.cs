@@ -35,6 +35,16 @@ namespace WoWFormatParser.Structures.ADT
             NFlowvs = br.ReadUInt32();
             Flowvs = br.ReadStructArray<SWFlowv>(2);
         }
+
+        public float GetHeight(int y, int x)
+        {
+            if (Verts[y, x] is SMVert magmaVert)
+                return magmaVert.Height;
+            else if (Verts[y, x] is SWVert waterVert)
+                return waterVert.Height;
+            else
+                return 0;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
