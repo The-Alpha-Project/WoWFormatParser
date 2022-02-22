@@ -43,27 +43,27 @@ namespace WoWFormatParser.Extensions
             {
                 for (int y = 0; y < 128; y++)
                 {
-                    transformed.V8[x, y] = (float)adt.MapChunks[x / 8, y / 8].V8[x % 8, y % 8];
-                    transformed.V9[x, y] = (float)adt.MapChunks[x / 8, y / 8].V9[x % 8, y % 8];
+                    transformed.V8[x, y] = adt.MapChunks[x / 8, y / 8].V8[x % 8, y % 8];
+                    transformed.V9[x, y] = adt.MapChunks[x / 8, y / 8].V9[x % 8, y % 8];
                 }
 
-                transformed.V9[x, 128] = (float)adt.MapChunks[x / 8, 15].V9[x % 8, 8];
-                transformed.V9[128, x] = (float)adt.MapChunks[15, x / 8].V9[8, x % 8];
+                transformed.V9[x, 128] = adt.MapChunks[x / 8, 15].V9[x % 8, 8];
+                transformed.V9[128, x] = adt.MapChunks[15, x / 8].V9[8, x % 8];
             }
 
-            transformed.V9[128, 128] = (float)adt.MapChunks[15, 15].V9[8, 8];
+            transformed.V9[128, 128] = adt.MapChunks[15, 15].V9[8, 8];
 
             return transformed;
         }
 
-        public static float CalculateZ(this HeightmapTranform transformed, double cy, double cx)
+        public static float CalculateZ(this HeightmapTranform transformed, float cy, float cx)
         {
-            var x = (cy * TileSizeYrds) / ((double)256 - 1);
-            var y = (cx * TileSizeYrds) / ((double)256 - 1);
+            var x = (cy * TileSizeYrds) / (256 - 1);
+            var y = (cx * TileSizeYrds) / (256 - 1);
             return transformed.GetZ(x, y);
         }
 
-        private static float GetZ(this HeightmapTranform transformed, double x, double z)
+        private static float GetZ(this HeightmapTranform transformed, float x, float z)
         {
             C3Vector[] v = new C3Vector[3] { new C3Vector(), new C3Vector(), new C3Vector() };
             C3Vector p = new C3Vector();
@@ -78,8 +78,8 @@ namespace WoWFormatParser.Extensions
             if (zc > 127)
                 zc = 127;
 
-            float lx = Convert.ToSingle(x - xc * UnitSize);
-            float lz = Convert.ToSingle(z - zc * UnitSize);
+            float lx = x - xc * UnitSize;
+            float lz = z - zc * UnitSize;
             p.X = lx;
             p.Z = lz;
 
@@ -121,12 +121,12 @@ namespace WoWFormatParser.Extensions
         /// </summary>
         private static float Solve(C3Vector[] v, C3Vector p)
         {
-            double a = v[0].Y * (v[1].Z - v[2].Z) + v[1].Y * (v[2].Z - v[0].Z) + v[2].Y * (v[0].Z - v[1].Z);
-            double b = v[0].Z * (v[1].X - v[2].X) + v[1].Z * (v[2].X - v[0].X) + v[2].Z * (v[0].X - v[1].X);
-            double c = v[0].X * (v[1].Y - v[2].Y) + v[1].X * (v[2].Y - v[0].Y) + v[2].X * (v[0].Y - v[1].Y);
-            double d = v[0].X * (v[1].Y * v[2].Z - v[2].Y * v[1].Z) + v[1].X * (v[2].Y * v[0].Z - v[0].Y * v[2].Z) + v[2].X * (v[0].Y * v[1].Z - v[1].Y * v[0].Z);
+            float a = v[0].Y * (v[1].Z - v[2].Z) + v[1].Y * (v[2].Z - v[0].Z) + v[2].Y * (v[0].Z - v[1].Z);
+            float b = v[0].Z * (v[1].X - v[2].X) + v[1].Z * (v[2].X - v[0].X) + v[2].Z * (v[0].X - v[1].X);
+            float c = v[0].X * (v[1].Y - v[2].Y) + v[1].X * (v[2].Y - v[0].Y) + v[2].X * (v[0].Y - v[1].Y);
+            float d = v[0].X * (v[1].Y * v[2].Z - v[2].Y * v[1].Z) + v[1].X * (v[2].Y * v[0].Z - v[0].Y * v[2].Z) + v[2].X * (v[0].Y * v[1].Z - v[1].Y * v[0].Z);
 
-            return Convert.ToSingle(((a * p.X + c * p.Z - d) / b));
+            return ((a * p.X + c * p.Z - d) / b);
         }
         #endregion
     }
