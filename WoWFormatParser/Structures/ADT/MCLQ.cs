@@ -13,9 +13,11 @@ namespace WoWFormatParser.Structures.ADT
         public byte[,] Tiles;
         public uint NFlowvs;
         public SWFlowv[] Flowvs;
+        public MCNK_Flags Flag;
 
         public MCLQ(BinaryReader br, MCNK_Flags flag)
         {
+            Flag = flag;
             Height = br.ReadStruct<CRange>();
 
             switch (flag)
@@ -34,6 +36,16 @@ namespace WoWFormatParser.Structures.ADT
             Tiles = br.ReadJaggedArray(8, 8, () => br.ReadByte());
             NFlowvs = br.ReadUInt32();
             Flowvs = br.ReadStructArray<SWFlowv>(2);
+        }
+
+        public float GetHeight(int y, int x)
+        {
+            if (Verts[y, x] is SMVert magmaVert)
+                return magmaVert.Height;
+            else if (Verts[y, x] is SWVert waterVert)
+                return waterVert.Height;
+            else
+                return 0;
         }
     }
 

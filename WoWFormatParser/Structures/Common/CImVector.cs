@@ -11,6 +11,14 @@ namespace WoWFormatParser.Structures.Common
         public byte r;
         public byte a;
 
+        public CImVector(byte b, byte g, byte r, byte a)
+        {
+            this.b = b;
+            this.g = g;
+            this.r = r;              
+            this.a = a;
+        }
+
         public override string ToString() => $"B: {b}, G: {g}, R: {r}, A: {a}";
     }
 }

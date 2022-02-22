@@ -18,13 +18,14 @@ namespace WoWFormatParser.Structures.WDT
         public MODF MapObjDefinition;
         public string[] WorldModelFileNames;
         public string[] DoodadFileNames;
-        public ADT.ADT[] Tiles;
+        public ADT.ADT[,] Tiles;
 
         public WDT(BinaryReader br, uint build)
         {
             IsAlphaFormat = build < 3592;
 
-            List<ADT.ADT> _Tiles = new List<ADT.ADT>();
+            ADT.ADT[,] _Tiles = null;
+            Queue<Tuple<int, int>> tile_locations = new Queue<Tuple<int, int>>();
 
             while (br.BaseStream.Position < br.BaseStream.Length)
             {
@@ -54,7 +55,19 @@ namespace WoWFormatParser.Structures.WDT
                         DoodadFileNames = br.ReadString(Size).Split('\0');
                         break;
                     case "MHDR":
-                        _Tiles.Add(ReadTile(br, build));
+                        if (_Tiles == null)
+                        {
+                            // Initialize our ADT grid, and generate coords for valid tiles only.
+                            _Tiles = new ADT.ADT[64, 64];
+                            for (int x = 0; x < 64; x++)
+                                for (int y = 0; y < 64; y++)
+                                    if (AreaInfo[x, y].Offset != 0)
+                                        tile_locations.Enqueue(new Tuple<int, int>(x, y));
+                        }
+
+                        var loc = tile_locations.Dequeue();
+                        // Place this tile in the next valid x,y position.
+                        _Tiles[loc.Item1, loc.Item2] = ReadTile(br, build);
                         break;
                     default:
                         throw new NotImplementedException("Unknown token " + Token);
@@ -64,13 +77,7 @@ namespace WoWFormatParser.Structures.WDT
             if (br.BaseStream.Position != br.BaseStream.Length)
                 throw new UnreadContentException();
 
-            Tiles = _Tiles.ToArray();
-        }
-
-        public ADT.ADT GetTile(MAIN areaInfo)
-        {
-            return Tiles?.Length > 0 ? 
-                Array.Find(Tiles, t => t.Offset == areaInfo.Offset) : null;
+            Tiles = _Tiles;
         }
 
         private ADT.ADT ReadTile(BinaryReader br, uint build)
