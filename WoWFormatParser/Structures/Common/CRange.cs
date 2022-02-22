@@ -9,6 +9,12 @@ namespace WoWFormatParser.Structures.Common
         public float low;
         public float high;
 
+        public CRange(float low, float high)
+        {
+            this.low = low;
+            this.high = high;
+        }
+
         public override string ToString() => $"Low: {low}, High: {high}";
     }
 }

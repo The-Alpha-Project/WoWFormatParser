@@ -5,7 +5,7 @@ using WoWFormatParser.Structures.ADT;
 using WoWFormatParser.Structures.Common;
 using WoWFormatParser.Structures.MDX;
 
-namespace WoWFormatParser
+namespace WoWFormatParser.Extensions
 {
     public static class Extensions
     {

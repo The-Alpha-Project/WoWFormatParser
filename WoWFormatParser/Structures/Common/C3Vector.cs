@@ -8,6 +8,13 @@ namespace WoWFormatParser.Structures.Common
         public float Y;
         public float Z;
 
+        public C3Vector(float x, float y, float z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
         public override string ToString() => $"X: {X}, Y: {Y}, Z: {Z}";
     }
 }
