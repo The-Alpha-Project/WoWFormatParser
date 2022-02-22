@@ -13,9 +13,11 @@ namespace WoWFormatParser.Structures.ADT
         public byte[,] Tiles;
         public uint NFlowvs;
         public SWFlowv[] Flowvs;
+        public MCNK_Flags Flag;
 
         public MCLQ(BinaryReader br, MCNK_Flags flag)
         {
+            Flag = flag;
             Height = br.ReadStruct<CRange>();
 
             switch (flag)
