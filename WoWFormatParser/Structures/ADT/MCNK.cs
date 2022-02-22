@@ -252,6 +252,21 @@ namespace WoWFormatParser.Structures.ADT
             return heights;
         }
 
+        private bool[,] holesMap;
+        public bool[,] HolesMap
+        {
+            get
+            {
+                if (holesMap == null)
+                {
+                    holesMap = new bool[4, 4];
+                    for (var i = 0; i < 16; i++)
+                        holesMap[i / 4, i % 4] = (((Holes >> (i)) & 1) == 1);
+                }
+                return holesMap;
+            }
+        }
+
         private float[,] lowResHeightsMatrix;
         private float[,] highResHeightsMatrix;
         /// <summary>
