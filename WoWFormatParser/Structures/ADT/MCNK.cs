@@ -399,6 +399,7 @@ namespace WoWFormatParser.Structures.ADT
         Unknown_0x80 = 128,
         DoNotRepairAlphaMaps = 32768,
         UsesHighResHoles = 65536,
+        IsDeepWater = 131072,
         HasLiquid = IsRiver | IsOcean | IsMagma | IsSlime
     }
 }
