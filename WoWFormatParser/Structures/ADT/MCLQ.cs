@@ -9,8 +9,8 @@ namespace WoWFormatParser.Structures.ADT
     public class MCLQ
     {
         public CRange Height;
-        public object[,] Verts = new object[9, 9];
-        public byte[,] Flags = new byte[8, 8];
+        public object[,] Verts;
+        public byte[,] Tiles;
         public uint NFlowvs;
         public SWFlowv[] Flowvs;
         public MCNK_Flags Flag;
@@ -23,27 +23,17 @@ namespace WoWFormatParser.Structures.ADT
             switch (flag)
             {
                 case MCNK_Flags.IsOcean:
-                    for (int i = 0; i < 9; i++)
-                        for (int j = 0; j < 9; j++)
-                            Verts[i, j] = br.ReadStruct<SOVert>();
+                    Verts = br.ReadJaggedArray(9, 9, () => (object)br.ReadStruct<SOVert>());
                     break;
                 case MCNK_Flags.IsMagma:
-                    for (int i = 0; i < 9; i++)
-                        for (int j = 0; j < 9; j++)
-                            Verts[i, j] = br.ReadStruct<SMVert>();
+                    Verts = br.ReadJaggedArray(9, 9, () => (object)br.ReadStruct<SMVert>());
                     break;
                 default:
-                    for (int i = 0; i < 9; i++)
-                        for (int j = 0; j < 9; j++)
-                            Verts[i, j] = br.ReadStruct<SWVert>();
+                    Verts = br.ReadJaggedArray(9, 9, () => (object)br.ReadStruct<SWVert>());
                     break;
             }
 
-            // Read flags.
-            for (int i = 0; i < 8; i++)
-                for (int j = 0; j < 8; j++)
-                    Flags[i, j] = br.ReadByte();
-
+            Tiles = br.ReadJaggedArray(8, 8, () => br.ReadByte());
             NFlowvs = br.ReadUInt32();
             Flowvs = br.ReadStructArray<SWFlowv>(2);
         }
